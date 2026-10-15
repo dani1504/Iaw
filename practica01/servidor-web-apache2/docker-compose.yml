@@ -7,4 +7,3 @@ services:
     volumes:
       - ./html:/var/www/html
       - ./configuracion-virtualhosts:/etc/apache2/sites-available
-      - ./nimbusmotos/configuracion-htacces/.htaccess:/var/www/nimbusmotos/.htaccess
