@@ -13,6 +13,10 @@ Consta de una carpeta principal servidor-web-apache2 donde dentro encontramos un
             - index.html
             - claves.txt
             - .htaccess
+    - ssl
+        - nimbus
+            - nimbuscoches.crt
+            - nimbuscoches.key
 - docker-compose.yml
 
 Haré una documentación de cada carpeta explicando detalladamente lo que hay dentro de ellas y con que finalidad lo he hecho.
@@ -31,6 +35,6 @@ Es la carpeta principal que se montará como volumen en el contenedor para servi
 
     - nimbuscoches/index.html. Documento HTML que actúa como la página principal de bienvenida del sitio de coches.
     - nimbusmotos/. Carpeta raíz del sitio de motos, la cual incluye los siguientes archivos de configuracion de seguridad.
-        - .htaccess. Archivo 
-        - claves.txt.
-        - index.html. 
+        - .htaccess. Archivo que funciona como "portero" para la carpeta nimbusmotos, es decir, actua de barrera de seguridad porque lo que le indicamos a este archivo es que si alguien intenta ver el contenido de claves.txt, bloquea esa petición y no le muestres nada.
+        - claves.txt. Archivo de texto que contiene información confidencial como son las claves de los usuarios y su acceso está bloqueado gracias a las reglas de .htaccess.
+        - index.html. Documento HTML de bienvenido a nimbusmotos.

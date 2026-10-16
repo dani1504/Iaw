@@ -7,3 +7,4 @@ services:
     volumes:
       - ./html:/var/www/html
       - ./configuracion-virtualhosts:/etc/apache2/sites-available
+      - ./ssl/nimbus:/etc/ssl/nimbus

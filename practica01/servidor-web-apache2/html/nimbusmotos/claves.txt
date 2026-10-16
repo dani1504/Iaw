@@ -1,1 +1,5 @@
-clave: Daniel2026
+Clave para el usuario dgonzalez:
+    - Daniel2026
+
+Clave para el usuario lcastro:
+    - Lola2026
