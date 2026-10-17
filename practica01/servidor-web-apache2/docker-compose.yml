@@ -3,17 +3,20 @@ services:
     image: ubuntu/apache2:latest
     container_name: nimbus_apache
     ports:
-      - "8090:80"
+      - "9000:80"
     volumes:
       - ./html:/var/www/html
       - ./configuracion-virtualhosts:/etc/apache2/sites-available
-      - ./ssl/nimbus:/etc/ssl/nimbus
+      - ./ssl:/etc/ssl
 
   nginx:
     image: nginx
     container_name: nimbus_nginx
     ports:
       - "9001:80"
+      - "443:443"
     volumes:
-      - ./html:/var/www/
       - ./nginx:/etc/nginx/conf.d
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - apache
