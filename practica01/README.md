@@ -1,10 +1,1 @@
 Esta es mi carpeta de la práctica 1.
-
-Antes de comenzar con la práctica, es necesario documentar las siguientes decisiones. Los dos dominios ficticios que he elegido son:
-    nimbuscoches1.com
-    nimbusmotos2.com
-La razón de por qué he elegido estos nombres para el dominio es sencilla. Pues al estar haciendo la práctica con estos nombres me facilitan distinguir los dos servicios rápidamente, además de que es una forma de tener la arquitectura más ordenada, facilitando la identificación y navegación para el usuario. Otra de las razones de por qué "1" y "2" es para cuando Apache tenga que decidir que VirtualHost usar, si el ServerName no coincide con ninguno, va a responder el primer VirtualHost definido. Así que el nombre de dominio nos va ayudar en la configuración de los VirtualHost y en el orden ya que vamos a saber cual es el primero y cual es el segundo.
-
-El MPM (Multi-Processing Module) de Apache elegido es event. Un MPM es el componente que determina como Apache gestiona las conexiones y los procesos que manejan las solicitudes de los usuarios, existen tres: prefork, worker y event. En mi caso he elegido event porque es el más eficiente para manejar la concurrencia de Apache. Pero lo que más me ha llamado la atención de este MPM es que los otros dos, mantienen hilos ocupados esperando a que las conexiones inactivas se queden libres. Event lo que hace es delegar esas conexiones inactivas (keep-alive) a hilos dedicados, liberando los hilos de trabajo reales para que puedan procesar peticiones activas de nuevos usuarios, mejorando el rendimiento general del servidor.
-
-.
