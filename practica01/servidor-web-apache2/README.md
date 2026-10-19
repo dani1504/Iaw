@@ -1,32 +1,49 @@
 # **🌐 NimbusDocs — Portal Documental Seguro Multi-Marca**
+
+## **ÍNDICE**
+
+* **<big>[Esquema de la infraestructura](#esquema-de-la-infraestructura)**</big>
+    * **<big>[2. CONTENIDO DE LOS SITIOS.](#2-contenido-de-los-sitios)**</big>
+    * **<big>[3. ESTRUCTURA DE CONFIGURACIÓN DE NGINX](#3-estructura-de-configuración-de-nginx)**</big>
+    * **<big>[4. OTROS ARCHIVOS](#4-otros-archivos)**</big>
+    * **<big>[I. Diseño y Requisitos](#i-diseño-y-requisitos)**</big>
+    * **<big>[II. Fase 1 — Backend Apache Multi-Marca](#ii-fase-1--backend-apache-multi-marca)**</big>
+    * **<big>[III. Fase 2 — Terminación TLS en Nginx](#iii-fase-2--terminación-tls-en-nginx)**</big>
+    * **<big>[IV. Fase 2 — Seguridad y Límite de Peticiones](#iv-fase-2--seguridad-y-límite-de-peticiones)**</big>
+    * **<big>[V. Fase 3 — Diagnóstico Provocado](#v-fase-3--diagnóstico-provocado)**</big>
+
+---
+
+## **Introducción**
+
 En este README.md haré una documentación de cada carpeta explicando detalladamente lo que hay dentro de ellas y con que finalidad lo he hecho. He intentado crear una infraestructura ordenada, organizada y sencilla de entender.
 
 Consta de una carpeta principal **servidor-web-apache2** donde dentro encontramos una serie de carpetas. El esqueleto de mi trabajo ahora mismo es así:
 
-## **Esquema de la infraestructura**
+# **Esquema de la infraestructura**
 
-- servidor-web-apache2
-    - configuracion-virtualhosts
-        - 000-nimbuspordefecto.conf
-        - nimbuscoches.conf
-        - nimbusmotos.conf
-    - html
-        - nimbuscoches
-            - index.html
-        - nimbusmotos
-            - index.html
-            - claves.txt
-            - .htaccess
-    - nginx
-        - nimbuscoches.conf
-        - nimbusmotos.conf
-        - pordefecto.conf
-        - limite.conf
-    - ssl
-        - nimbuscoches.crt
-        - nimbuscoches.key
-- docker-compose.yml
-- README.md
+- <big>**servidor-web-apache2**</big>
+    - <big>**configuracion-virtualhost**</big>
+        - <big>**000-nimbuspordefecto.conf**</big>
+        - <big>**nimbuscoches.conf**</big>
+        - <big>**nimbusmotos.conf**</big>
+    - <big>**html**</big>
+        - <big>**nimbuscoches**</big>
+            - <big>**index.html**</big>
+        - <big>**nimbusmotos**</big>
+            - <big>**index.html**</big>
+            - <big>**claves.txt**</big>
+            - <big>**.htaccess**</big>
+    - <big>**nginx**</big>
+        - <big>**nimbuscoches.conf**</big>
+        - <big>**nimbusmotos.conf**</big>
+        - <big>**pordefecto.conf**</big>
+        - <big>**limite.conf**</big>
+    - <big>**ssl**</big>
+        - <big>**nimbuscoches.crt**</big>
+        - <big>**nimbuscoches.key**</big>
+- <big>**docker-compose.yml**</big>
+- <big>**README.md**</big>
 
 ## **1. ESTRUCTURA DE CONFIGURACIÓN DE APACHE.**
 
@@ -400,3 +417,4 @@ Para esta parte de la práctica, he provocado dos fallos de configuración a pro
 | --- | --- | --- | --- | --- |
 | Intento entrar al archivo `claves.txt` desde terminal y me deja leerlo perfectamente (me devuelve un 200 OK), cuando en realidad debería darme un `error 403 Forbidden` porque le puse un archivo .htaccess configurado para bloquearlo. | Al principio pensé que había escrito mal el código dentro del .htaccess o que lo había creado en la carpeta equivocada y no en la raíz del VirtualHost. | Tiré un `curl -I -k -H "Host: nimbusmotos.com" https://localhost/claves.txt` y vi que devolvía un 200, entré al contenedor `docker compose exec apache bash` y comprobé el archivo de configuración de los virtualhost que yo he configurado manualmente con: `cat /etc/apache2/sites-enabled/nimbusmotos.conf`. | El fallo era que en el archivo de mi VirtualHost, dentro de la etiqueta `<Directory>`, no tenía puesto `AllowOverride All` entonces lo que hace Apache es bloquearlo por defecto. Apache pasará del archivo .htaccess y no aplicará las reglas de seguridad.| Editar el archivo de configuración de mi virtualhost, cambiar esa directiva a `AllowOverride All` para autorizar la lectura de los .htaccess, y reiniciamos el contenedor de Apache. |
 | Al entrar a `nimbuscoches.com` o `nimbusmotos.com` (con `curl -k -H "Host: nimbuscoches.com" https://localhost/`), en vez de cargarme la web correcta de cada marca, me salta el VirtualHost por defecto de Apache (un error 403), como si ninguna de mis dos webs existiera. | Creía que había escrito mal los nombres en el ServerName de los archivos .conf de Apache, o que Apache no estaba leyendo la carpeta de los VirtualHosts en el volumen de Docker. | Miré qué le estaba llegando exactamente a Apache leyendo sus logs en tiempo real con: `docker compose logs apache -f` y ahí me di cuenta de que las peticiones no llegaban con el dominio. | El problema era que Nginx estaba actuando como proxy, pero no le estaba "chivando" a Apache qué dominio pedía el usuario. Al hacer el `proxy_pass` Nginx reenviaba el tráfico a secas, así que Apache recibía la petición como si el destino fuera la IP interna de Docker o el nombre apache:80. Al no coincidir con `nimbusmotos.com`, Apache cargaba el sitio por defecto. | Añadir la directiva `proxy_set_header Host $host;` en el bloque `location /` de Nginx, le pasa intacto el nombre del dominio a Apache, y este ya sabe qué VirtualHost debe cargar. |
+---
