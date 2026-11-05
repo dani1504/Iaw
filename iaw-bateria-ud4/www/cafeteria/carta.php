@@ -8,7 +8,7 @@ require __DIR__ . '/inc/cabecera.php';
 
 // ✍️ 2.2 · Una función euros() que reciba un número (float) y devuelva el precio en texto,
 //    con dos decimales, coma decimal y el símbolo del euro: 3.2 → «3,20 €». Pista: number_format.
-
+euros()
 ?>
 <h2>La carta</h2>
 <ul id="carta">
