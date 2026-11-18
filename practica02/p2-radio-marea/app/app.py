@@ -26,6 +26,10 @@ PODCASTS_DE_PRUEBA = [
 # ✍️ C2 · La conexión con MariaDB (UD6, apartado 5.2): host, base, usuario y contraseña, del entorno (radio.env).
 #         Cada fila, un diccionario. Nada escrito a mano.
 def conectar():
+    c = pymysql.connect(host="db", database="radio", user=DB_USER, password=DB_PASS, charset="utf8mb4", cursorclass=pymysql.cursors.DictCursor)
+    with c.cursor() as cur:
+        cur.execute("SELECT * FROM programas")
+    filas = cur.fetchall()
     raise RuntimeError("Sin hacer: conectar() (C2)")
 
 
@@ -68,11 +72,12 @@ def podcasts():
 def podcast_id(id):
     for x in leer_podcasts():
         if id == x["id"]:
-            return jsonify(leer_podcasts())
+            return jsonify(leer_podcasts(id))
         else:
             return jsonify({"error": "No existe ese podcast"}), 404
     if id != int(id):
         return jsonify({"error": "No se admiten letras, solo numeros"}), 404
+    return jsonify(leer_podcasts(request.args.get(id)))
 
 @app.route("/api/entrar", methods=["POST"])
 def entrar():
