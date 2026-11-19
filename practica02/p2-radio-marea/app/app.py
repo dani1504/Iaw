@@ -72,9 +72,8 @@ def podcasts():
 def podcast_id(id):
     for x in leer_podcasts():
         if id == x["id"]:
-            return jsonify(leer_podcasts(id))
-        else:
-            return jsonify({"error": "No existe ese podcast"}), 404
+            return jsonify(x)
+    return jsonify({"error": "No existe ese podcast"}), 404
     if id != int(id):
         return jsonify({"error": "No se admiten letras, solo numeros"}), 404
     return jsonify(leer_podcasts(request.args.get(id)))
